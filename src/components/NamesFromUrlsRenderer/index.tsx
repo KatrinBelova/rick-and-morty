@@ -12,10 +12,11 @@ interface NameResponse {
 }
 
 const NamesFromUrlsRenderer: FC<Props> = ({ urls }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [names, setNames] = useState<string[]>([]);
 
   const fetchNames = async () => {
+    setIsLoading(true);
     const namePromises: Promise<string>[] = [];
 
     urls?.forEach((url: string) => {
@@ -31,9 +32,8 @@ const NamesFromUrlsRenderer: FC<Props> = ({ urls }) => {
       setNames(resolvedNames);
     } catch (error) {
       console.error('Error fetching names:', error);
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -44,11 +44,13 @@ const NamesFromUrlsRenderer: FC<Props> = ({ urls }) => {
 
   return (
     <ul className={styles.list}>
-      {names.map((name: string, index: number) => (
-        <li key={index} className={styles.item}>
-          {name}
-        </li>
-      ))}
+      {names &&
+        names?.length > 0 &&
+        names.map((name: string, index: number) => (
+          <li key={index} className={styles.item}>
+            {name}
+          </li>
+        ))}
     </ul>
   );
 };

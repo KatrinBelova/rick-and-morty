@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import LoaderIcon from 'icons/LoaderIcon';
+import LoaderIcon from 'assets/icons/LoaderIcon';
 import styles from './Loader.module.scss';
 
 const Loader: FC = () => {

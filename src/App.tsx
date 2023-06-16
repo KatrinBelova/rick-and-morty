@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from 'routes/Home';
-import Character from 'routes/Character';
-import ErrorPage from 'routes/ErrorPage';
+import Home from 'pages/Home';
+import Character from 'pages/Character';
+import ErrorPage from 'pages/ErrorPage';
 import SearchBar from 'components/SearchBar';
 import Container from 'components/common/Container';
 

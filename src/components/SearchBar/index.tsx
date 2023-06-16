@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useEffect, useRef, useState } from 'react';
-import { filterCharacter } from 'api';
+import { getCharacterList } from 'api/character';
 import clsx from 'clsx';
 import { useDebounce } from 'hooks/useDebounce';
 import styles from './SearchBar.module.scss';
@@ -8,7 +8,9 @@ import Loader from 'components/common/Loader';
 
 const SearchBar: FC = () => {
   const { search, results, hidden, loadBtn } = styles;
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   const [value, setValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -32,36 +34,33 @@ const SearchBar: FC = () => {
     };
   }, []);
 
-  const fetchData = async (name: string, page?: number) => {
-    const result = await filterCharacter(name, page);
-    return result?.data?.results;
+  const fetchData = async (page: number, name: string) => {
+    const {
+      results,
+      info: { pages },
+    } = await getCharacterList(page, name);
+    setTotalPages(pages);
+    return results;
   };
 
   const handleLoadMore = async () => {
-    try {
-      const addSuggestions = await fetchData(value);
+    setIsLoading(true);
+    const suggestions = await fetchData(currentPage + 1, value);
 
-      setSuggestions((prevState) =>
-        addSuggestions ? prevState.concat(addSuggestions) : []
-      );
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    setSuggestions((prevState) => prevState.concat(suggestions));
+    setCurrentPage((prevPage) => prevPage + 1);
+
+    setIsLoading(false);
   };
 
   useDebounce(
     async () => {
-      try {
-        const suggestions = await fetchData(value);
+      setIsLoading(true);
+      const suggestions = await fetchData(currentPage, value);
 
-        setSuggestions(suggestions || []);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
+      setSuggestions(suggestions);
+
+      setIsLoading(false);
     },
     1000,
     [value]
@@ -100,13 +99,15 @@ const SearchBar: FC = () => {
             ))}
         </ul>
         {isLoading && <Loader />}
-        <Button
-          className={loadBtn}
-          onClick={handleLoadMore}
-          disabled={isLoading}
-        >
-          Load More
-        </Button>
+        {totalPages !== currentPage && (
+          <Button
+            className={loadBtn}
+            onClick={handleLoadMore}
+            disabled={isLoading}
+          >
+            Load More
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { getCharacterList } from 'api';
+import { getCharacterList } from 'api/character';
 import Loader from 'components/common/Loader';
 import Actor from '../Actor';
 import styles from './ActorList.module.scss';
@@ -9,33 +9,24 @@ const ActorList: FC = () => {
   const [actors, setActors] = useState([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const resultsContainerRef = useRef<HTMLDivElement | null>(null);
 
   const getListByPage = async (page: number) => {
-    try {
-      const list = await getCharacterList(page).then((res) =>
-        res.status === 200 ? res.data : null
-      );
+    setIsLoading(true);
 
-      if (list) {
-        const pagesInfo = list?.info;
+    const {
+      info: { pages },
+      results,
+    } = await getCharacterList(page);
 
-        setActors(list?.results);
-        setTotalPages(pagesInfo?.pages);
+    setActors(results);
+    setTotalPages(pages);
 
-        if (page) setCurrentPage(page);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
+    if (page) setCurrentPage(page);
+
+    setIsLoading(false);
   };
-
-  useEffect(() => {
-    getListByPage(currentPage);
-  }, []);
 
   const handleScroll = (ref: HTMLDivElement) => {
     window.scrollTo({
@@ -44,6 +35,10 @@ const ActorList: FC = () => {
       behavior: 'smooth',
     });
   };
+
+  useEffect(() => {
+    getListByPage(currentPage);
+  }, []);
 
   useEffect(() => {
     if (resultsContainerRef.current) handleScroll(resultsContainerRef.current);
@@ -62,10 +57,9 @@ const ActorList: FC = () => {
     <section>
       <div ref={resultsContainerRef} style={{ minHeight: '100vh' }}>
         <ul className={styles?.list}>
-          {actors?.length > 0 &&
-            actors?.map((actor: Character) => (
-              <Actor features={actor} key={actor?.id} />
-            ))}
+          {actors.map((actor: Character) => (
+            <Actor features={actor} key={actor?.id} />
+          ))}
         </ul>
         <Pagination
           currentPage={currentPage}

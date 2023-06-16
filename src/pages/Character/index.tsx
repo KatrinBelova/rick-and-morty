@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getSingleCharacter } from 'api';
+import { getCharacter } from 'api/character';
 import styles from './Character.module.scss';
 import StatusSpeciesInfo from 'components/common/StatusSpeciesInfo';
 import axios from 'axios';
@@ -10,11 +10,11 @@ import Loader from 'components/common/Loader';
 const Character: FC = () => {
   const { id } = useParams();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [person, setPerson] = useState<Character>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [person, setPerson] = useState({});
   const [locationData, setLocationData] = useState<Location>();
   const { name, image, status, species, origin, location, gender, episode } =
-    person || {};
+    person as Character;
 
   const { featureLabel, imageWrapper } = styles;
 
@@ -39,15 +39,13 @@ const Character: FC = () => {
     { label: 'Origin', value: origin?.name },
   ];
 
-  const getCharacter = async (id: string) => {
-    try {
-      const person = await getSingleCharacter(id).then((res) => res.data);
-      setPerson(person);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
+  const getCharacterById = async (id: string) => {
+    setIsLoading(true);
+
+    const person = await getCharacter(id);
+    setPerson(person);
+
+    setIsLoading(false);
   };
 
   const getLocationDetails = async (url: string) => {
@@ -60,7 +58,7 @@ const Character: FC = () => {
   };
 
   useEffect(() => {
-    if (id) getCharacter(id);
+    if (id) getCharacterById(id);
   }, [id]);
 
   useEffect(() => {
@@ -69,29 +67,41 @@ const Character: FC = () => {
 
   if (isLoading) return <Loader />;
 
+  if (!Object.keys(person as Character)?.length)
+    return (
+      <main>
+        <Link to="/">Back to Home</Link>
+        <p>Sorry! Looks like no info about character is available now!</p>
+      </main>
+    );
+
   return (
     <main>
       <Link to="/">Back to Home</Link>
 
-      <div className={imageWrapper}>
-        <img src={image} alt={name} />
-      </div>
-      <section>
-        <h2>{name}</h2>
-        {status && species && (
-          <StatusSpeciesInfo status={status} species={species} />
-        )}
-        {features.map((item) => (
-          <p key={item.label}>
-            <span className={featureLabel}>{item.label}: </span>
-            <span>{item.value || (item?.render && item.render())}</span>
-          </p>
-        ))}
-        <div>
-          <span className={featureLabel}>Episodes: </span>
-          <NamesFromUrlsRenderer urls={episode} />
-        </div>
-      </section>
+      {
+        <>
+          <div className={imageWrapper}>
+            <img src={image} alt={name} />
+          </div>
+          <section>
+            <h2>{name}</h2>
+            {status && species && (
+              <StatusSpeciesInfo status={status} species={species} />
+            )}
+            {features.map((item) => (
+              <p key={item.label}>
+                <span className={featureLabel}>{item.label}: </span>
+                <span>{item.value || (item?.render && item.render())}</span>
+              </p>
+            ))}
+            <div>
+              <span className={featureLabel}>Episodes: </span>
+              <NamesFromUrlsRenderer urls={episode} />
+            </div>
+          </section>
+        </>
+      }
     </main>
   );
 };
