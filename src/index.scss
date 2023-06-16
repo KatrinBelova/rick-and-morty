@@ -1,0 +1,20 @@
+@import-normalize;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', 'Lato', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}

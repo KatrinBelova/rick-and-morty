@@ -1,0 +1,12 @@
+.list {
+  padding-left: 30px;
+}
+
+.item {
+  list-style-type: disc;
+  padding: 5px;
+
+  &:hover {
+    background-color: #f2f2f2;
+  }
+}

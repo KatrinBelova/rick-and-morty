@@ -1,0 +1,22 @@
+@import '/src/styles/mixins.scss';
+@import '/src/styles/breakpoints.scss';
+
+.list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+
+  @include media-breakpoint-up($sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include media-breakpoint-up($xl) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.errorMessage {
+  text-align: center;
+  font-size: 25px;
+}

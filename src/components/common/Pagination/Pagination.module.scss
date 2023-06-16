@@ -1,0 +1,32 @@
+@import '/src/styles/mixins.scss';
+@import '/src/styles/breakpoints.scss';
+
+.pagination {
+  display: flex;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  li {
+    margin: 5px;
+  }
+
+  button {
+    background-color: #fff;
+    border: 1px solid grey;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+
+    &.activeBtn {
+      background-color: lightgray;
+    }
+
+    &.hideOnMobile {
+      display: none;
+      @include media-breakpoint-up($sm) {
+        display: block;
+      }
+    }
+  }
+}
