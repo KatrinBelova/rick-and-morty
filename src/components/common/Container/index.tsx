@@ -7,7 +7,8 @@ interface Props {
 }
 
 const Container: FC<PropsWithChildren<Props>> = ({ children, className }) => {
-  return <div className={clsx(styles.container, className)}>{children}</div>;
+  const { container } = styles;
+  return <div className={clsx(container, className)}>{children}</div>;
 };
 
 export default Container;

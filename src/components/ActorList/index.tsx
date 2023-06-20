@@ -11,6 +11,7 @@ const ActorList: FC = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const resultsContainerRef = useRef<HTMLDivElement | null>(null);
+  const { errorMessage, list } = styles;
 
   const getListByPage = async (page: number) => {
     setIsLoading(true);
@@ -48,7 +49,7 @@ const ActorList: FC = () => {
 
   if (!actors?.length)
     return (
-      <p className={styles?.errorMessage}>
+      <p className={errorMessage}>
         Looks like no characters are available now!
       </p>
     );
@@ -56,7 +57,7 @@ const ActorList: FC = () => {
   return (
     <section>
       <div ref={resultsContainerRef} style={{ minHeight: '100vh' }}>
-        <ul className={styles?.list}>
+        <ul className={list}>
           {actors.map((actor: Character) => (
             <Actor features={actor} key={actor?.id} />
           ))}

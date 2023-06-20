@@ -14,6 +14,7 @@ interface NameResponse {
 const NamesFromUrlsRenderer: FC<Props> = ({ urls }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [names, setNames] = useState<string[]>([]);
+  const { list, item } = styles;
 
   const fetchNames = async () => {
     setIsLoading(true);
@@ -43,11 +44,11 @@ const NamesFromUrlsRenderer: FC<Props> = ({ urls }) => {
   if (isLoading) return <Loader />;
 
   return (
-    <ul className={styles.list}>
+    <ul className={list}>
       {names &&
         names?.length > 0 &&
         names.map((name: string, index: number) => (
-          <li key={index} className={styles.item}>
+          <li key={index} className={item}>
             {name}
           </li>
         ))}

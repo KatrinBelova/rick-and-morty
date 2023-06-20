@@ -13,12 +13,10 @@ const Button: FC<PropsWithChildren<Props>> = ({
   className,
   ...rest
 }) => {
+  const { button } = styles;
+
   return (
-    <button
-      className={clsx(styles.button, className)}
-      onClick={onClick}
-      {...rest}
-    >
+    <button className={clsx(button, className)} onClick={onClick} {...rest}>
       {children}
     </button>
   );
