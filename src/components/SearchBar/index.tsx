@@ -7,7 +7,7 @@ import Button from 'components/common/Button';
 import Loader from 'components/common/Loader';
 
 const SearchBar: FC = () => {
-  const { search, results, hidden, loadBtn } = styles;
+  const { search, results, hidden, loadBtn, errorMessage } = styles;
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -26,19 +26,12 @@ const SearchBar: FC = () => {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener('click', handleOutsideClick);
-
-    return () => {
-      document.removeEventListener('click', handleOutsideClick);
-    };
-  }, []);
-
   const fetchData = async (page: number, name: string) => {
     const {
       results,
       info: { pages },
     } = await getCharacterList(page, name);
+
     setTotalPages(pages);
     return results;
   };
@@ -55,10 +48,12 @@ const SearchBar: FC = () => {
 
   useDebounce(
     async () => {
-      setIsLoading(true);
-      const suggestions = await fetchData(currentPage, value);
-
-      setSuggestions(suggestions);
+      if (value) {
+        const suggestions = await fetchData(currentPage, value);
+        setSuggestions(suggestions);
+      } else {
+        setSuggestions([]);
+      }
 
       setIsLoading(false);
     },
@@ -72,7 +67,16 @@ const SearchBar: FC = () => {
 
   const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
+    setIsLoading(true);
   };
+
+  useEffect(() => {
+    document.addEventListener('click', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, []);
 
   return (
     <div className={search} ref={searchComponentRef}>
@@ -86,22 +90,35 @@ const SearchBar: FC = () => {
       />
       <div
         className={clsx(results, {
-          [hidden]: hideSuggestions || !suggestions?.length,
+          [hidden]: hideSuggestions || !value,
         })}
       >
-        <ul>
-          {suggestions &&
-            suggestions?.length > 0 &&
-            suggestions.map((suggestion: Character, idx) => (
-              <li key={idx}>
-                <a href={`/character/${suggestion?.id}`}>{suggestion?.name}</a>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <ul>
+            {suggestions.length > 0 ? (
+              <>
+                {suggestions.map((suggestion: Character, idx) => (
+                  <li key={idx}>
+                    <a href={`/character/${suggestion?.id}`}>
+                      {suggestion?.name}
+                    </a>
+                  </li>
+                ))}
+              </>
+            ) : (
+              <li className={errorMessage}>
+                Looks like no characters were found
               </li>
-            ))}
-        </ul>
-        {isLoading && <Loader />}
+            )}
+          </ul>
+        )}
         {totalPages !== currentPage && (
           <Button
-            className={loadBtn}
+            className={clsx(loadBtn, {
+              [hidden]: suggestions.length === 0,
+            })}
             onClick={handleLoadMore}
             disabled={isLoading}
           >

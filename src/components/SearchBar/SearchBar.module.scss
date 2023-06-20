@@ -34,6 +34,15 @@
       }
     }
 
+    li.errorMessage {
+      text-align: center;
+
+      &:hover {
+        background-color: unset;
+        cursor: default;
+      }
+    }
+
     a {
       width: 100%;
       display: inline-block;
