@@ -4,11 +4,11 @@ import StatusSpeciesInfo from 'components/common/StatusSpeciesInfo';
 import styles from './Actor.module.scss';
 
 interface Props {
-  features: Character;
+  actor: Character;
 }
 
-const Actor: FC<Props> = ({ features }) => {
-  const { id, name, image, status, species, location } = features || {};
+const Actor: FC<Props> = ({ actor }) => {
+  const { id, name, image, status, species, location } = actor || {};
   const { item, info } = styles;
 
   return (

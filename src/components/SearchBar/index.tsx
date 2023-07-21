@@ -99,11 +99,9 @@ const SearchBar: FC = () => {
           <ul>
             {suggestions.length > 0 ? (
               <>
-                {suggestions.map((suggestion: Character, idx) => (
-                  <li key={idx}>
-                    <a href={`/character/${suggestion?.id}`}>
-                      {suggestion?.name}
-                    </a>
+                {suggestions.map(({ id, name }: Character) => (
+                  <li key={id}>
+                    <a href={`/character/${id}`}>{name}</a>
                   </li>
                 ))}
               </>

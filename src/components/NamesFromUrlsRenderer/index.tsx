@@ -45,13 +45,11 @@ const NamesFromUrlsRenderer: FC<Props> = ({ urls }) => {
 
   return (
     <ul className={list}>
-      {names &&
-        names?.length > 0 &&
-        names.map((name: string, index: number) => (
-          <li key={index} className={item}>
-            {name}
-          </li>
-        ))}
+      {names.map((name: string) => (
+        <li key={name} className={item}>
+          {name}
+        </li>
+      ))}
     </ul>
   );
 };

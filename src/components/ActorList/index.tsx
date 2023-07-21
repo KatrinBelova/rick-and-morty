@@ -59,7 +59,7 @@ const ActorList: FC = () => {
       <div ref={resultsContainerRef} style={{ minHeight: '100vh' }}>
         <ul className={list}>
           {actors.map((actor: Character) => (
-            <Actor features={actor} key={actor?.id} />
+            <Actor actor={actor} key={actor?.id} />
           ))}
         </ul>
         <Pagination
